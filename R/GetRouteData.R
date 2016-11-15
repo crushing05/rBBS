@@ -2,7 +2,7 @@
 #' @export GetRouteData
 #' @importFrom RCurl getURL
 #' @importFrom plyr ldply
-GetRouteData=function(AOU=NULL, countrynum=NULL, states=NULL, year, weather=NULL, routes=NULL, 
+GetRouteData=function(AOU=NULL, countrynum=NULL, states=NULL, year = NULL, weather=NULL, routes=NULL, 
                       Zeroes=TRUE, TenStops = TRUE, 
                       Dir="ftp://ftpext.usgs.gov/pub/er/md/laurel/BBS/DataFiles/") {
   
@@ -25,7 +25,9 @@ GetRouteData=function(AOU=NULL, countrynum=NULL, states=NULL, year, weather=NULL
     if(is.null(states)) {  UseState <- TRUE  } else {  UseState <- dat$statenum%in%states  }
     Use <- UseYear & UseAOU & UseCountry & UseState
     if(sum(Use)>0) {
-      dat$routeID <- paste(dat$statenum, dat[,grep("^[Rr]oute$", names(dat))])
+      dat <- mutate(dat, routeID = as.numeric(paste(countrynum,
+                                                    formatC(statenum, width = 2, format = "d", flag = "0"),
+                                                    formatC(route, width = 3, format = "d", flag = "0"), sep="")))
       dat=subset(dat, subset=Use)
       return(dat)      
     } else return(NULL)
