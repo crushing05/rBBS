@@ -58,6 +58,7 @@ GetRouteData=function(AOU=NULL, countrynum=NULL, states=NULL, year = NULL, weath
   
   Data.lst <- sapply(Files[!is.na(Files)], GetDat, dir=DirData, year=year, AOU=AOU, countrynum=countrynum, states=states, simplify=FALSE)
   Data <- ldply(Data.lst)
+  Data <- filter(Data, rpid == 101) %>% select(-.id, -countrynum, -statenum, -route, -rpid)
   Data
 }
 
