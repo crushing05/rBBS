@@ -1,4 +1,4 @@
-# Function to query 10 or 50 stop data for a species in a year
+# Function to query 10 or 50 stop data for all species in a year
 #' @export GetRouteData
 #' @importFrom RCurl getURL
 #' @importFrom plyr ldply
