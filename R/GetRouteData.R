@@ -62,32 +62,8 @@ GetRouteData=function(AOU=NULL, countrynum=NULL, states=NULL, year = NULL, weath
   Data <- select(Data, -.id, -countrynum, -statenum, -route, -rpid)
   Data <- rename(Data, Year = year)
   
-  # Add 0 counts using weather data 
-  if(is.null(weather)) weather=GetWeather(Dir)
-  run_info <- filter(weather, routeID %in% Data$routeID & Year %in% year)
-  run_info <- select(run_info, routeID, Year, RunType)
   
-  # Add RunType to Data
-  Data <- left_join(Data, run_info)
-  
-  # routes w/ data in weather (run) but not counts = 0 count
-  count0 <- anti_join(run_info, Data)
-  count_full <- full_join(count0, Data)
-  count_full$aou <- AOU
-  
-  # Remove runs that don't meet BBS quality standards
-  count_full <- filter(count_full, RunType == 1)
-  count_full <- select(count_full, -RunType)
-  
-  # Fill in 0 counts
-  count_full[is.na(count_full)] <- 0
-
-  
-  if(is.null(routes)) routes=GetRoutes(Dir)
-  routes <- select(routes, routeID, Latitude, Longitude)
-
-  AllData <- left_join(count_full, routes)  
-  AllData
+  Data
 }
 
 
