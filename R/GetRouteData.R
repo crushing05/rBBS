@@ -3,7 +3,7 @@
 #' @importFrom RCurl getURL
 #' @importFrom plyr ldply
 GetRouteData=function(AOU=NULL, countrynum=NULL, states=NULL, year = NULL, weather=NULL, routes=NULL, 
-                      Zeroes=TRUE, TenStops = TRUE, 
+                      TenStops = TRUE, 
                       Dir="ftp://ftpext.usgs.gov/pub/er/md/laurel/BBS/DataFiles/") {
   
   if(TenStops) {
@@ -49,7 +49,7 @@ GetRouteData=function(AOU=NULL, countrynum=NULL, states=NULL, year = NULL, weath
     Files <- RegionsForZipFiles$FileName10stop[ToUse]
     Missing <- ToUse & is.na(RegionsForZipFiles$FileName10stop)
   } else { # 50 stop
-    Files <- RegionsForZipFiles$FileName50stop[ToUse]
+    Files <- unique(RegionsForZipFiles$FileName50stop[ToUse])
     Missing <- ToUse & is.na(RegionsForZipFiles$FileName50stop)
   }
   
@@ -58,14 +58,13 @@ GetRouteData=function(AOU=NULL, countrynum=NULL, states=NULL, year = NULL, weath
   
   Data.lst <- sapply(Files[!is.na(Files)], GetDat, dir=DirData, year=year, AOU=AOU, countrynum=countrynum, states=states, simplify=FALSE)
   Data <- ldply(Data.lst)
-  Data <- filter(Data, rpid == 101)
-  Data <- select(Data, -.id, -countrynum, -statenum, -route, -rpid)
-  Data <- rename(Data, Year = year)
+  Data <- dplyr::filter(Data, rpid == 101)
+  Data <- dplyr::select(Data, -.id, -countrynum, -statenum, -route, -rpid)
+  Data <- dplyr::rename(Data, Year = year)
   
   
   Data
 }
-
 
 # Also: add a vars option, to only return some variables
 #   Try <- Get50RouteData(countrynum=NULL, states=c(89, 40:60), weather=NULL, routes=NULL, AOU=c(4050, 3850), year=2010, Zeroes=FALSE, Dir=NULL)
