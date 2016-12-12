@@ -5,7 +5,8 @@
 \title{GetSppCounts}
 \usage{
 GetSppCounts(count = bbs, AOU, run_atrb = weather, route_atrb = routes,
-  years = seq(from = 1997, to = 2014), statenum = NULL, countrynum = NULL)
+  years = seq(from = 1997, to = 2014), statenum = NULL, countrynum = NULL,
+  Write = FALSE, path = NULL)
 }
 \arguments{
 \item{count}{Data frame containing the raw BBS counts obtained from the function `GetRouteData()`}
@@ -17,6 +18,10 @@ GetSppCounts(count = bbs, AOU, run_atrb = weather, route_atrb = routes,
 \item{statenum}{Optional numeric vector containing the states of interest (see BBS website for code values)}
 
 \item{countrynum}{Optional numeric vector containing the countries of interest (840 = US, 124 = Canada, 484 = Mexico)}
+
+\item{Write}{Should data be written as .csv file?}
+
+\item{path}{Path where .csv file should be saved (default is working directory)}
 
 \item{weather}{Data frame containing the weather data obtained from the function `GetWeather()`}
 

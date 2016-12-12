@@ -8,6 +8,8 @@
 #' @param years Optional vector containing the years of interest (default in full study period)
 #' @param countrynum Optional numeric vector containing the countries of interest (840 = US, 124 = Canada, 484 = Mexico)
 #' @param statenum Optional numeric vector containing the states of interest (see BBS website for code values)
+#' @param Write Should data be written as .csv file?
+#' @param path Path where .csv file should be saved (default is working directory)
 #' @return A .csv file containing the following fields:
 #' @return   routeID The unique 8 digit route ID for each route
 #' @return   Year The year that the count was conducted
@@ -20,7 +22,8 @@
 #' @export
 
 GetSppCounts <- function(count = bbs, AOU, run_atrb = weather, route_atrb = routes,
-                         years = seq(from = 1997, to = 2014), statenum = NULL, countrynum = NULL){
+                         years = seq(from = 1997, to = 2014), statenum = NULL, countrynum = NULL,
+                         Write = FALSE, path = NULL){
 
   spp_counts <- dplyr::filter(count, aou == AOU & Year %in% years)
 
@@ -52,10 +55,20 @@ GetSppCounts <- function(count = bbs, AOU, run_atrb = weather, route_atrb = rout
   ### Add longitude and latitude
   route_atrb <- dplyr::select(route_atrb, routeID, Latitude, Longitude, Stratum, BCR)
   spp_counts_full <- dplyr::left_join(spp_counts_full, route_atrb)
+  
+  if(Write){
+    if(is.null(path)){
+      write.csv(spp_counts_full,
+                paste(alpha, "counts.csv", sep = "_"),
+                row.names = FALSE)
+    }else{
+      write.csv(spp_counts_full,
+                paste(path, paste(alpha, "counts.csv", sep = "_"), sep = "/"),
+                row.names = FALSE)
+    }
 
-  write.csv(spp_counts_full,
-            paste("inst/output/spp_counts", paste(alpha, "counts.csv", sep = "_"), sep = "/"),
-            row.names = FALSE)
+  }
+
 
   spp_counts_full
 }
