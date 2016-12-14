@@ -10,7 +10,8 @@
 #' @export
 
 RemoveOutliers <- function(counts, thresh = 5, k = 5){
-  dist.mat <- geosphere::distm(cbind(counts$Longitude, counts$Latitude))
+  route_xy <- as.matrix(counts[!duplicated(counts$routeID), c("Longitude", "Latitude")])
+  dist.mat <- geosphere::distm(route_xy)
   nn <- apply(dist.mat, 1, function(x) sort(x)[2:(k + 1)])
   nn.dist <- colMeans(nn)
   mu.nn <- mean(nn.dist)
