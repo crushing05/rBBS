@@ -19,5 +19,5 @@ RemoveOutliers <- function(counts, thresh = 5, k = 5){
   
   cutoff <- mu.nn + thresh * sd.nn
   
-  counts2 <- counts[which(nn.dist) < cutoff]
+  counts2 <- counts[which(nn.dist < cutoff),]
 }
