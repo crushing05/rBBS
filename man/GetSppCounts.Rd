@@ -4,13 +4,10 @@
 \alias{GetSppCounts}
 \title{GetSppCounts}
 \usage{
-GetSppCounts(count = bbs, AOU, run_atrb = weather, route_atrb = routes,
-  years = seq(from = 1997, to = 2014), statenum = NULL, countrynum = NULL,
-  Write = FALSE, path = NULL)
+GetSppCounts(bbs_raw = bbs, AOU, years = seq(from = 1997, to = 2014),
+  statenum = NULL, countrynum = NULL, Write = FALSE, path = NULL)
 }
 \arguments{
-\item{count}{Data frame containing the raw BBS counts obtained from the function `GetRouteData()`}
-
 \item{AOU}{Numeric AOU code for the species of interest}
 
 \item{years}{Optional vector containing the years of interest (default in full study period)}
@@ -23,9 +20,7 @@ GetSppCounts(count = bbs, AOU, run_atrb = weather, route_atrb = routes,
 
 \item{path}{Path where .csv file should be saved (default is working directory)}
 
-\item{weather}{Data frame containing the weather data obtained from the function `GetWeather()`}
-
-\item{routes}{Data frame containing the route data obtained from the function `GetRoutes()`}
+\item{bbs}{List containing the raw BBS counts, weather, and route info obtained from the function `get_BBSn()`}
 }
 \value{
 A .csv file containing the following fields:

@@ -1,10 +1,8 @@
 #' GetSppCounts
 #'
 #' Filter raw BBS counts by species, add 0 counts, and latitude/longitude
-#' @param count Data frame containing the raw BBS counts obtained from the function `GetRouteData()`
+#' @param bbs List containing the raw BBS counts, weather, and route info obtained from the function `get_BBSn()`
 #' @param AOU Numeric AOU code for the species of interest
-#' @param weather Data frame containing the weather data obtained from the function `GetWeather()`
-#' @param routes Data frame containing the route data obtained from the function `GetRoutes()`
 #' @param years Optional vector containing the years of interest (default in full study period)
 #' @param countrynum Optional numeric vector containing the countries of interest (840 = US, 124 = Canada, 484 = Mexico)
 #' @param statenum Optional numeric vector containing the states of interest (see BBS website for code values)
@@ -21,18 +19,18 @@
 #' @return   BCR The Bird Conservation Region for the route
 #' @export
 
-GetSppCounts <- function(count = bbs, AOU, run_atrb = weather, route_atrb = routes,
+GetSppCounts <- function(bbs_raw = bbs, AOU,
                          years = seq(from = 1997, to = 2014), statenum = NULL, countrynum = NULL,
                          Write = FALSE, path = NULL){
 
-  spp_counts <- dplyr::filter(count, aou == AOU & Year %in% years)
+  spp_counts <- dplyr::filter(bbs_raw$count, aou == AOU & Year %in% years)
 
   if(!is.null(countrynum)){spp_counts <- dplyr::filter(spp_counts, grepl(paste("^", countrynum, sep = ""), routeID))}
   if(!is.null(statenum)){spp_counts <- dplyr::filter(spp_counts, regexpr(as.character(statenum), routeID) == 4)}
 
 
-  run_atrb <- dplyr::filter(run_atrb, routeID %in% spp_counts$routeID)
-  if(!is.null(years)){run_atrb <- dplyr::filter(run_atrb, Year %in% years)}
+  run_atrb <- dplyr::filter(bbs_raw$weather, routeID %in% spp_counts$routeID)
+  if(!is.null(years)){run_atrb <- dplyr::filter(bbs_raw$weather, Year %in% years)}
   run_atrb <- dplyr::select(run_atrb, routeID, Year, RunType)
 
   ### Add RunType to count data
@@ -53,7 +51,7 @@ GetSppCounts <- function(count = bbs, AOU, run_atrb = weather, route_atrb = rout
   spp_counts_full[is.na(spp_counts_full)] <- 0
 
   ### Add longitude and latitude
-  route_atrb <- dplyr::select(route_atrb, routeID, Latitude, Longitude, Stratum, BCR)
+  route_atrb <- dplyr::select(bbs_raw$routes, routeID, Latitude, Longitude, Stratum, BCR)
   spp_counts_full <- dplyr::left_join(spp_counts_full, route_atrb)
   
   if(Write){
