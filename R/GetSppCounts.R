@@ -30,7 +30,7 @@ GetSppCounts <- function(bbs_raw = bbs, AOU,
 
 
   run_atrb <- dplyr::filter(bbs_raw$weather, routeID %in% spp_counts$routeID)
-  if(!is.null(years)){run_atrb <- dplyr::filter(bbs_raw$weather, Year %in% years)}
+  if(!is.null(years)){run_atrb <- dplyr::filter(bbs_raw$weather,  routeID %in% spp_counts$routeID & Year %in% years)}
   run_atrb <- dplyr::select(run_atrb, routeID, Year, RunType)
 
   ### Add RunType to count data
@@ -66,7 +66,6 @@ GetSppCounts <- function(bbs_raw = bbs, AOU,
     }
 
   }
-
 
   spp_counts_full
 }
