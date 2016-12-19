@@ -23,7 +23,7 @@ GetSppCounts <- function(bbs_raw = bbs, AOU,
                          years = seq(from = 1997, to = 2014), statenum = NULL, countrynum = NULL,
                          Write = FALSE, path = NULL){
 
-  spp_counts <- dplyr::filter(bbs_raw$count, aou == AOU & Year %in% years)
+  spp_counts <- dplyr::filter(bbs_raw$counts, aou == AOU & Year %in% years)
 
   if(!is.null(countrynum)){spp_counts <- dplyr::filter(spp_counts, grepl(paste("^", countrynum, sep = ""), routeID))}
   if(!is.null(statenum)){spp_counts <- dplyr::filter(spp_counts, regexpr(as.character(statenum), routeID) == 4)}
