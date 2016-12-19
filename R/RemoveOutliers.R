@@ -9,7 +9,7 @@
 #' @return Data frame with same format as \code{counts} but with outlier routes removed
 #' @export
 
-RemoveOutliers <- function(counts, thresh = 5, k = 5){
+RemoveOutliers <- function(counts, thresh = 12, k = 5){
   route_xy <- as.matrix(counts[!duplicated(counts$routeID), c("routeID", "Longitude", "Latitude")])
   dist.mat <- geosphere::distm(route_xy[,c("Longitude", "Latitude")])
   nn <- apply(dist.mat, 1, function(x) sort(x)[2:(k + 1)])
