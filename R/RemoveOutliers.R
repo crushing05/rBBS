@@ -23,11 +23,11 @@ RemoveOutliers <- function(counts, thresh = 12, k = 5, Write = TRUE, path = NULL
   
   if(Write){
     if(is.null(path)){
-      write.csv(spp_counts_full,
+      write.csv(counts2,
                 "no_outlier_counts.csv",
                 row.names = FALSE)
     }else{
-      write.csv(spp_counts_full,
+      write.csv(counts,
                 paste(path, "no_outlier_counts.csv", sep = "/"),
                 row.names = FALSE)
     }
