@@ -9,7 +9,7 @@
 #' @return Data frame with same format as \code{counts} but with outlier routes removed
 #' @export
 
-RemoveOutliers <- function(counts, thresh = 12, k = 5){
+RemoveOutliers <- function(counts, thresh = 12, k = 5, Write = TRUE, path = NULL){
   route_xy <- as.matrix(counts[!duplicated(counts$routeID), c("routeID", "Longitude", "Latitude")])
   dist.mat <- geosphere::distm(route_xy[,c("Longitude", "Latitude")])
   nn <- apply(dist.mat, 1, function(x) sort(x)[2:(k + 1)])
@@ -20,4 +20,17 @@ RemoveOutliers <- function(counts, thresh = 12, k = 5){
   cutoff <- mu.nn + thresh * sd.nn
   keep <- route_xy[which(nn.dist < cutoff), "routeID"]
   counts2 <- dplyr::filter(counts, routeID %in% keep)
+  
+  if(Write){
+    if(is.null(path)){
+      write.csv(spp_counts_full,
+                "no_outlier_counts.csv",
+                row.names = FALSE)
+    }else{
+      write.csv(spp_counts_full,
+                paste(path, "no_outlier_counts.csv", sep = "/"),
+                row.names = FALSE)
+    }
+    
+  }
 }

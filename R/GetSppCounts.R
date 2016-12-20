@@ -21,7 +21,7 @@
 
 GetSppCounts <- function(bbs_raw = bbs, AOU,
                          years = seq(from = 1997, to = 2014), statenum = NULL, countrynum = NULL,
-                         Write = FALSE, path = NULL){
+                         Write = TRUE, path = NULL){
 
   spp_counts <- dplyr::filter(bbs_raw$counts, aou == AOU & Year %in% years)
 
