@@ -57,11 +57,11 @@ GetSppCounts <- function(bbs_raw = bbs, AOU,
   if(Write){
     if(is.null(path)){
       write.csv(spp_counts_full,
-                paste(alpha, "counts.csv", sep = "_"),
+                "raw_counts.csv",
                 row.names = FALSE)
     }else{
       write.csv(spp_counts_full,
-                paste(path, paste(alpha, "counts.csv", sep = "_"), sep = "/"),
+                paste(path, "raw_counts.csv", sep = "/"),
                 row.names = FALSE)
     }
 
