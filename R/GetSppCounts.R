@@ -21,7 +21,7 @@
 
 GetSppCounts <- function(bbs_raw = bbs, AOU,
                          years = seq(from = 1997, to = 2014), statenum = NULL, countrynum = NULL,
-                         Write = FALSE, path = NULL){
+                         Write = TRUE, path = NULL){
 
   spp_counts <- dplyr::filter(bbs_raw$counts, aou == AOU & Year %in% years)
 
@@ -57,11 +57,11 @@ GetSppCounts <- function(bbs_raw = bbs, AOU,
   if(Write){
     if(is.null(path)){
       write.csv(spp_counts_full,
-                paste(alpha, "counts.csv", sep = "_"),
+                "raw_counts.csv",
                 row.names = FALSE)
     }else{
       write.csv(spp_counts_full,
-                paste(path, paste(alpha, "counts.csv", sep = "_"), sep = "/"),
+                paste(path, "raw_counts.csv", sep = "/"),
                 row.names = FALSE)
     }
 
