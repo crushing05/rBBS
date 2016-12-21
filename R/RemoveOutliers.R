@@ -14,7 +14,11 @@ RemoveOutliers <- function(counts, thresh = 15, k = 1, Write = TRUE, path = NULL
   route_xy <- as.matrix(counts[!duplicated(counts$routeID), c("routeID", "Longitude", "Latitude")])
   dist.mat <- geosphere::distm(route_xy[,c("Longitude", "Latitude")])
   nn <- apply(dist.mat, 1, function(x) sort(x)[2:(k + 1)])
-  nn.dist <- colMeans(nn)
+  if(k == 1){
+    nn.dist <- nn
+  }else{
+    nn.dist <- colMeans(nn)
+  }
   mu.nn <- mean(nn.dist)
   sd.nn <- sd(nn.dist)
   
