@@ -10,9 +10,11 @@
 #' @export
 
 
-RemoveOutliers <- function(counts = NULL, thresh = 15, k = 1, Write = TRUE, path = NULL){
-  if(!is.null(counts)){
+RemoveOutliers <- function(raw.counts = NULL, thresh = 15, k = 1, Write = TRUE, path = NULL){
+  if(is.null(raw.counts)){
     counts <- read.csv(paste0(path, "/raw_counts.csv"))
+  }else{
+    counts <- raw.counts
   }
   
   route_xy <- as.matrix(counts[!duplicated(counts$routeID), c("routeID", "Longitude", "Latitude")])
