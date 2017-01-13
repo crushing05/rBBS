@@ -11,6 +11,7 @@
 
 
 RemoveOutliers <- function(raw.counts = NULL, thresh = 15, k = 1, Write = TRUE, path = NULL){
+
   if(is.null(raw.counts)){
     counts <- read.csv(paste0(path, "/raw_counts.csv"))
   }else{
