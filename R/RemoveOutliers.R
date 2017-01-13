@@ -10,7 +10,11 @@
 #' @export
 
 
-RemoveOutliers <- function(counts, thresh = 15, k = 1, Write = TRUE, path = NULL){
+RemoveOutliers <- function(counts = NULL, thresh = 15, k = 1, Write = TRUE, path = NULL){
+  if(!is.null(counts)){
+    counts <- read.csv(paste0(path, "/raw_counts.csv"))
+  }
+  
   route_xy <- as.matrix(counts[!duplicated(counts$routeID), c("routeID", "Longitude", "Latitude")])
   dist.mat <- geosphere::distm(route_xy[,c("Longitude", "Latitude")])
   nn <- apply(dist.mat, 1, function(x) sort(x)[2:(k + 1)])
