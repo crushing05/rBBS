@@ -64,10 +64,9 @@ GetSppCounts <- function(bbs_raw = bbs, AOU,
                 paste(path, "raw_counts.csv", sep = "/"),
                 row.names = FALSE)
     }
-
+  }else{
+    spp_counts_full
   }
-
-  spp_counts_full
 }
 
 
