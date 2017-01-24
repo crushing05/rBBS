@@ -53,6 +53,7 @@ GetSppCounts <- function(bbs_raw = bbs, AOU,
   ### Add longitude and latitude
   route_atrb <- dplyr::select(bbs_raw$routes, routeID, Latitude, Longitude, Stratum, BCR)
   spp_counts_full <- dplyr::left_join(spp_counts_full, route_atrb)
+  spp_counts_full <- spp_counts_full[!duplicated(spp_counts_full),]
   
   if(Write){
     if(is.null(path)){
