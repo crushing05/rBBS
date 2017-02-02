@@ -34,17 +34,18 @@ GetSppCounts <- function(bbs_raw = bbs, AOU,
   run_atrb <- dplyr::select(run_atrb, routeID, Year, RunType)
 
   ### Add RunType to count data
+  ### Include only runs that meet BBS quality standards
   spp_counts <- dplyr::left_join(spp_counts, run_atrb)
-
+  spp_counts <- dplyr::filter(spp_counts, RunType == 1)
+  
+  ### Remove any routes with no route-runs with runtype == 1
   ### Run info for 0 counts (run has weather data but no count data)
-  count0 <- dplyr::anti_join(run_atrb, spp_counts)
+  run_atrb2 <- dplyr::filter(run_atrb, routeID %in% spp_counts$routeID)
+  count0 <- dplyr::anti_join(run_atrb2, spp_counts)
 
   ### Add 0 counts to data & fill in AOU code
   spp_counts_full <- dplyr::full_join(count0, spp_counts)
   spp_counts_full$aou <- AOU
-
-  ### Include only runs that meet BBS quality standards
-  spp_counts_full <- dplyr::filter(spp_counts_full, RunType == 1)
   spp_counts_full <- dplyr::select(spp_counts_full, -RunType)
 
   ### Fill in 0 counts
