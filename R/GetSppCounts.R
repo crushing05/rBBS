@@ -6,6 +6,8 @@
 #' @param years Optional vector containing the years of interest (default in full study period)
 #' @param countrynum Optional numeric vector containing the countries of interest (840 = US, 124 = Canada, 484 = Mexico)
 #' @param statenum Optional numeric vector containing the states of interest (see BBS website for code values)
+#' @param strata Optional numeric vector containing the BBS strata of interest (see BBS website for code values)
+#' @param bcr Optional numeric vector containing the BCRs of interest (see BBS website for code values)
 #' @param Write Should data be written as .csv file?
 #' @param path Path where .csv file should be saved (default is working directory)
 #' @return A .csv file containing the following fields:
@@ -20,14 +22,15 @@
 #' @export
 
 GetSppCounts <- function(bbs_raw = bbs, AOU,
-                         years = seq(from = 1997, to = 2014), statenum = NULL, countrynum = NULL,
+                         years = seq(from = 1997, to = 2014), 
+                         statenum = NULL, countrynum = NULL, strata = NULL, bcr = NULL,
                          Write = TRUE, path = NULL){
 
   spp_counts <- dplyr::filter(bbs_raw$counts, aou == AOU & Year %in% years)
 
   if(!is.null(countrynum)){spp_counts <- dplyr::filter(spp_counts, grepl(paste("^", countrynum, sep = ""), routeID))}
   if(!is.null(statenum)){spp_counts <- dplyr::filter(spp_counts, regexpr(as.character(statenum), routeID) == 4)}
-
+  
 
   run_atrb <- dplyr::filter(bbs_raw$weather, routeID %in% spp_counts$routeID)
   if(!is.null(years)){run_atrb <- dplyr::filter(bbs_raw$weather,  routeID %in% spp_counts$routeID & Year %in% years)}
@@ -55,6 +58,8 @@ GetSppCounts <- function(bbs_raw = bbs, AOU,
   route_atrb <- dplyr::select(bbs_raw$routes, routeID, Latitude, Longitude, Stratum, BCR)
   spp_counts_full <- dplyr::left_join(spp_counts_full, route_atrb)
   spp_counts_full <- spp_counts_full[!duplicated(spp_counts_full),]
+  if(!is.null(strata)){spp_counts_full <- dplyr::filter(spp_counts_full, Stratum %in% strata)}
+  if(!is.null(bcr)){spp_counts_full <- dplyr::filter(spp_counts_full, BCR %in% bcr)}
   
   if(Write){
     if(is.null(path)){
