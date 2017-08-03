@@ -25,7 +25,7 @@ GetRouteData=function(AOU=NULL, countrynum=NULL, states=NULL, year = NULL, weath
     if(is.null(states)) {  UseState <- TRUE  } else {  UseState <- dat$statenum%in%states  }
     Use <- UseYear & UseAOU & UseCountry & UseState
     if(sum(Use)>0) {
-      dat <- mutate(dat, routeID = as.numeric(paste(countrynum,
+      dat <- dplyr::mutate(dat, routeID = as.numeric(paste(countrynum,
                                                     formatC(statenum, width = 2, format = "d", flag = "0"),
                                                     formatC(route, width = 3, format = "d", flag = "0"), sep="")))
       dat=subset(dat, subset=Use)

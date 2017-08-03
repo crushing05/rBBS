@@ -22,7 +22,7 @@
 #' @export
 
 GetSppCounts <- function(bbs_raw = bbs, AOU,
-                         years = seq(from = 1997, to = 2014), 
+                         years = seq(from = 1997, to = 2016), 
                          statenum = NULL, countrynum = NULL, strata = NULL, bcr = NULL,
                          Write = TRUE, path = NULL){
 
