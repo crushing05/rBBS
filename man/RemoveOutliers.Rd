@@ -4,14 +4,15 @@
 \alias{RemoveOutliers}
 \title{RemoveOutliers}
 \usage{
-RemoveOutliers(counts, thresh = 5, k = 5)
+RemoveOutliers(raw.counts = NULL, thresh = 15, k = 1, Write = TRUE,
+  path = NULL)
 }
 \arguments{
-\item{counts}{Species count data frame obtained from GetSppCounts}
-
 \item{thresh}{Number of standard deviations beyond mean knn distance to be considered outlier (default = 5)}
 
 \item{k}{Number k on nearest neighbors}
+
+\item{counts}{Species count data frame obtained from GetSppCounts}
 }
 \value{
 Data frame with same format as \code{counts} but with outlier routes removed
@@ -22,4 +23,3 @@ Removes routes that are likely outliers (far outside "likely" breeding range)
 \details{
 Estimates for each route \code{i} the mean distance of each route to its \code{k} nearest neighbors (knn-distance). Any route with knn-distance greater than \code{tresh}*sd above the mean(knn-distance) is considered an outlier and removed from the data
 }
-

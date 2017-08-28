@@ -17,4 +17,3 @@ The four digit numeric code for the species of interest
 \description{
 Get numeric AOU species code using common name or four letter alpha code
 }
-
