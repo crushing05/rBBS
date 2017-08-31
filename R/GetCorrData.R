@@ -159,10 +159,10 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
   
   wind <- dplyr::select(covs, routeID, Year, StartWind)
   wind <- wind[!duplicated(wind[,-3]),]
-  wind$StartWind <- scale(as.numeric(wind$StartWind))[,1]
+  wind$StartWind <- (as.numeric(wind$StartWind) - 1)/(max(as.numeric(wind$StartWind), na.rm = TRUE) - 1)
   wind <- tidyr::spread(wind, key = Year, value = StartWind)
   wind <- dplyr::select(wind, -routeID)
-  wind[is.na(wind)] <- 0
+  wind[is.na(wind)] <- mean(unlist(wind), na.rm = TRUE)
   
   time <- dplyr::select(covs, routeID, Year, StartTime)
   time <- time[!duplicated(time[,-3]),]
@@ -175,13 +175,17 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
   nov <- nov[!duplicated(nov[,-3]),]
   nov <- tidyr::spread(nov, key = Year, value = novice)
   nov <- dplyr::select(nov, -routeID)
+  nov[is.na(nov)] <- 0
   
   obs <- dplyr::select(covs, routeID, Year, ObsN)
-  obs$ObsN <- as.integer(as.factor(obs$ObsN))
   obs <- obs[!duplicated(obs[,-3]),]
   obs <- tidyr::spread(obs, key = Year, value = ObsN)
   obs <- dplyr::select(obs, -routeID)
-
+  obs <- as.matrix(obs)
+  obs <- as.numeric(as.factor(obs))
+  nObs <- max(obs, na.rm = TRUE)
+  obs[is.na(obs)] <- nObs + 1
+  
   coord <- dplyr::filter(spp_counts_full, !duplicated(routeID))
   coord <- dplyr::arrange(coord, routeID)
   slat <- scale(coord$Latitude)[,1]
