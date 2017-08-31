@@ -192,7 +192,7 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
   slon <- scale(coord$Longitude)[,1]
   bcr <- coord$BCR
   
-  dat <- list(h = h, temp = temp, time = time, wind = wind, nov = nov, obs = obs, 
+  dat <- list(h = h, temp = temp, time = time, wind = wind, nov = nov, obs = obs, nObs = nObs, 
               slat = slat, slon = slon, lat = coord$Latitude, lon = coord$Longitude, bcr = bcr, nRoutes = nRoutes, nStops = nStops, 
               nYears = nYears, start_year = start.year, end_year = end.year)
   
