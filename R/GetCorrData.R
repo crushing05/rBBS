@@ -182,7 +182,7 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
   obs <- tidyr::spread(obs, key = Year, value = ObsN)
   obs <- dplyr::select(obs, -routeID)
   obs <- as.matrix(obs)
-  obs <- as.numeric(as.factor(obs))
+  obs <- matrix(as.numeric(as.factor(obs)), nrow = nRoutes, ncol = nYears)
   nObs <- max(obs, na.rm = TRUE)
   obs[is.na(obs)] <- nObs + 1
   
