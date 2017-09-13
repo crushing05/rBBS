@@ -200,14 +200,12 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
   alpha <- code_lookup$alpha[code_lookup$AOU == AOU]
   dat <- list(alpha = alpha, h = h, temp = temp, time = time, wind = wind, nov = nov, obs = obs, 
               slat = slat, slon = slon, lat = coord$Latitude, lon = coord$Longitude, bcr = bcr, nRoutes = nRoutes, nStops = nStops, 
-              nYears = nYears, start_year = start.year, end_year = end.year)
+              nYears = nYears, start_year = start.year, end_year = end.year, hull = hull)
   
     if(is.null(path)){
       saveRDS(dat, file = "bbs_data.rds")
-      saveRDS(buff_hull, file = "hull.rds")
     }else{
       saveRDS(dat, paste(path, "bbs_data.rds", sep = "/"))
-      saveRDS(buff_hull, paste(path, "hull.rds", sep = "/"))
     }
 
 }

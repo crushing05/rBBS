@@ -44,5 +44,7 @@ RemoveOutliers <- function(raw.counts = NULL, thresh = 15, k = 1, Write = TRUE, 
                 row.names = FALSE)
     }
     
+  }else{
+    return(counts2)
   }
 }
