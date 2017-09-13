@@ -8,7 +8,7 @@ Maintainer: Bob O'Hara <bohara@senckenberg.de>
 Description: Imports North American Breeding Bird Survey data from the USGS' ftp
     server, or a local copy.
 Depends: R (>= 2.10)
-Imports: RCurl, plyr, dplyr, geosphere, lubridate
+Imports: RCurl, plyr, dplyr, geosphere, lubridate, sp, rgeos
 Suggests: testthat
 License: GPL-3
 LazyData: TRUE

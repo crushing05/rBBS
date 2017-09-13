@@ -31,7 +31,7 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
   nYears <- length(years)
   ten.stops <- sum(grepl("count", names(bbs_raw$counts))) > 0
   
-  spp_counts <- dplyr::filter(bbs_raw$counts, aou == AOU & Year %in% years)
+  spp_counts <- dplyr::filter(bbs_raw$counts, aou == AOU)
   
   if(!is.null(countrynum)){spp_counts <- dplyr::filter(spp_counts, grepl(paste("^", countrynum, sep = ""), routeID))}
   if(!is.null(statenum)){spp_counts <- dplyr::filter(spp_counts, regexpr(as.character(statenum), routeID) == 4)}
@@ -39,7 +39,7 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
 
   run_atrb <- dplyr::filter(bbs_raw$weather, routeID %in% spp_counts$routeID)
   
-  if(!is.null(years)){run_atrb <- dplyr::filter(bbs_raw$weather,  routeID %in% spp_counts$routeID & Year %in% years)}
+  if(!is.null(years)){run_atrb <- dplyr::filter(bbs_raw$weather,  routeID %in% spp_counts$routeID)}
   run_atrb$StartTemp <- as.integer(run_atrb$StartTemp)
   run_atrb$EndTemp <- as.integer(run_atrb$EndTemp)
   run_atrb$StartTemp[run_atrb$TempScale %in% c("f", "F", "N")] <- (run_atrb$StartTemp[run_atrb$TempScale %in%  c("f", "F", "N")] - 32)/1.8
@@ -78,19 +78,21 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
   if(!is.null(strata)){spp_counts_full <- dplyr::filter(spp_counts_full, Stratum %in% strata)}
   if(!is.null(bcr)){spp_counts_full <- dplyr::filter(spp_counts_full, BCR %in% bcr)}
   
+  ### Filter only years of interest
+  spp_counts_full <- dplyr::filter(spp_counts_full,  Year %in% years)
+  spp_counts_full <- rBBS::RemoveOutliers(raw.counts = spp_counts_full, Write = FALSE)
+  
   ### Buffer routes w/ observed counts
-  lat_occ	<- range(spp_counts_full$Latitude)	# latitude of occupied routes
-  long_occ	<- range(spp_counts_full$Longitude)		# longitude of occupied routes
-  long_occ[long_occ==-Inf] <- 0
+  ## Create convex hull 
+  bbs_pts <- sp::SpatialPoints(spp_counts_full[,c('Longitude','Latitude')])
+  hull <- rgeos::gConvexHull(bbs_pts)
+  buff_hull <- rgeos::gBuffer(hull, width = buffer)
   
-  max_lat	<- max(lat_occ) + buffer
-  min_lat	<- min(lat_occ) -  buffer
-  min_long	<- min(long_occ) - buffer
-  max_long	<- max(long_occ) + buffer
-  
-  ## Identify routes that buffer observed counts
-  buff_routes	<- dplyr::filter(route_atrb, Latitude < max_lat & Latitude > min_lat & Longitude < max_long & Longitude > min_long)
-  buff_routes <- dplyr::anti_join(buff_routes, spp_counts, by = "routeID")
+  ## Identify routes within convex hull
+  all_coords <- sp::SpatialPoints(route_atrb[,c('Longitude','Latitude', "routeID")])
+  inside_hull <- !is.na(sp::over(all_coords, buff_hull))
+  buff_routes	<- route_atrb[inside_hull == "TRUE",]
+  buff_routes <- suppressMessages(dplyr::anti_join(buff_routes, spp_counts, by = "routeID"))
   buff_routes <- dplyr::select(buff_routes, routeID, Latitude, Longitude, Stratum, BCR)
   
   ## Create data frame containing years that buffered routes were run (0 count)
@@ -98,7 +100,7 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
   buff_run <- dplyr::distinct(buff_run, routeID, Year, .keep_all = FALSE)
   
   ## Add lat, long, stratum, & BCR
-  buff_run <- dplyr::left_join(buff_run, buff_routes)
+  buff_run <- suppressMessages(dplyr::left_join(buff_run, buff_routes))
   
   ### Create data frame with 0 counts for buffered routes
   col_counts <- grep("count|stop", names(spp_counts_full), value = TRUE)
@@ -109,6 +111,7 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
   count_buff$aou <- unique(spp_counts_full$aou)
   
   spp_counts_full <- dplyr::bind_rows(spp_counts_full, count_buff)
+
   
   ### Covert count data to long format
   counts <- dplyr::select(spp_counts_full, routeID, Year, grep("count|stop", names(spp_counts_full)))
@@ -137,6 +140,7 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
   if(ten.stops) nStops <- 5
   
   counts <- dplyr::arrange(counts, routeID)
+  
   
   if(nYears > 1){
     h <- NULL
@@ -200,8 +204,10 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
   
     if(is.null(path)){
       saveRDS(dat, file = "bbs_data.rds")
+      saveRDS(buff_hull, file = "hull.rds")
     }else{
       saveRDS(dat, paste(path, "bbs_data.rds", sep = "/"))
+      saveRDS(buff_hull, paste(path, "hull.rds", sep = "/"))
     }
 
 }

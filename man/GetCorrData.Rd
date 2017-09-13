@@ -4,9 +4,9 @@
 \alias{GetCorrData}
 \title{GetCorrData}
 \usage{
-GetCorrData(bbs_raw = bbs, AOU, start.year = 1997, end.year = 2016,
+GetCorrData(bbs_raw = bbs, AOU, start.year = 1966, end.year = 2016,
   statenum = NULL, countrynum = NULL, strata = NULL, bcr = NULL,
-  occ = TRUE, path = NULL)
+  buffer = 2, occ = TRUE, path = NULL)
 }
 \arguments{
 \item{AOU}{Numeric AOU code for the species of interest}
