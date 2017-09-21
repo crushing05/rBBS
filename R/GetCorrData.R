@@ -96,7 +96,7 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
   buff_routes <- dplyr::select(buff_routes, routeID, Latitude, Longitude, Stratum, BCR)
   
   ## Create data frame containing years that buffered routes were run (0 count)
-  buff_run <- dplyr::filter(bbs$weather,  routeID %in% buff_routes$routeID & Year %in% seq(from = start.year, to = end.year) & RunType == 1)
+  buff_run <- dplyr::filter(bbs_raw$weather,  routeID %in% buff_routes$routeID & Year %in% seq(from = start.year, to = end.year) & RunType == 1)
   buff_run <- dplyr::distinct(buff_run, routeID, Year, .keep_all = FALSE)
   
   ## Add lat, long, stratum, & BCR
