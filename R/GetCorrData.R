@@ -11,6 +11,7 @@
 #' @param bcr Optional numeric vector containing the BCRs of interest (see BBS website for code values)
 #' @param occ Counts or presence/absence? (Default == presence/absence)
 #' @param path Path where .csv file should be saved (default is working directory)
+#' @param lon Optional numeric vector containing maximum and minimum longitude of routes to keep
 #' @return A .csv file containing the following fields:
 #' @return   routeID The unique 8 digit route ID for each route
 #' @return   Year The year that the count was conducted
@@ -25,7 +26,7 @@
 GetCorrData <- function(bbs_raw = bbs, AOU,
                          start.year = 1966, end.year = 2016, 
                          statenum = NULL, countrynum = NULL, strata = NULL, bcr = NULL, buffer = 2,
-                         occ = TRUE, path = NULL){
+                         occ = TRUE, lon = NULL, path = NULL){
 
   years <- seq(from = start.year, to = end.year)
   nYears <- length(years)
@@ -77,7 +78,7 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
   spp_counts_full <- spp_counts_full[!duplicated(spp_counts_full),]
   if(!is.null(strata)){spp_counts_full <- dplyr::filter(spp_counts_full, Stratum %in% strata)}
   if(!is.null(bcr)){spp_counts_full <- dplyr::filter(spp_counts_full, BCR %in% bcr)}
-  
+  if(!is.null(lon)){spp_counts_full <- dplyr::filter(spp_counts_full, Longitude < max(lon) & Longitude > min(lon))}
   ### Filter only years of interest
   spp_counts_full <- dplyr::filter(spp_counts_full,  Year %in% years)
   spp_counts_full <- rBBS::RemoveOutliers(raw.counts = spp_counts_full, Write = FALSE)
