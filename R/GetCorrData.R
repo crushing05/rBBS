@@ -38,7 +38,7 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
   if(!is.null(statenum)){spp_counts <- dplyr::filter(spp_counts, regexpr(as.character(statenum), routeID) == 4)}
   
 
-  run_atrb <- dplyr::filter(bbs_raw$weather, routeID %in% spp_counts$routeID)
+  run_atrb <- dplyr::filter(bbs_raw$weather, routeID %in% spp_counts$routeID & RPID %in% c(101, 501))
   
   if(!is.null(years)){run_atrb <- dplyr::filter(bbs_raw$weather,  routeID %in% spp_counts$routeID)}
   run_atrb$StartTemp <- as.integer(run_atrb$StartTemp)
@@ -50,9 +50,12 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
   run_atrb <- dplyr::arrange(run_atrb, routeID, Year)
   run_atrb <- dplyr::mutate(run_atrb, novice = as.integer(!duplicated(ObsN)))
   
+  ## Add distance and time-of-detection dummary variable
+  run_atrb <- dplyr::mutate(run_atrb, twedt = ifelse(RPID == 101, 0, 1))
+  
   ## Add year day
   run_atrb <- dplyr::mutate(run_atrb, day = lubridate::yday(lubridate::mdy(paste(run_atrb$Month, run_atrb$Day, run_atrb$Year, sep = "/"))))
-  run_atrb <- dplyr::select(run_atrb, routeID, Year, RunType, StartTemp, StartWind, StartTime, novice, ObsN, day)
+  run_atrb <- dplyr::select(run_atrb, routeID, Year, RunType, StartTemp, StartWind, StartTime, novice, twedt, ObsN, day)
   run_atrb <- dplyr::filter(run_atrb, RunType == 1)
   run_atrb <- run_atrb[!duplicated(run_atrb),]
   
@@ -97,7 +100,7 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
   buff_routes <- dplyr::select(buff_routes, routeID, Latitude, Longitude, Stratum, BCR)
   
   ## Create data frame containing years that buffered routes were run (0 count)
-  buff_run <- dplyr::filter(bbs_raw$weather,  routeID %in% buff_routes$routeID & Year %in% seq(from = start.year, to = end.year) & RunType == 1)
+  buff_run <- dplyr::filter(bbs_raw$weather,  routeID %in% buff_routes$routeID & Year %in% seq(from = start.year, to = end.year) & RunType == 1 & RPID %in% c(101, 501))
   buff_run <- dplyr::distinct(buff_run, routeID, Year, .keep_all = FALSE)
   
   ## Add lat, long, stratum, & BCR
@@ -154,7 +157,7 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
   }
 
   
-  covs <- dplyr::select(spp_counts_full, routeID, Year, StartTemp, StartWind, StartTime, novice, ObsN, day)
+  covs <- dplyr::select(spp_counts_full, routeID, Year, StartTemp, StartWind, StartTime, novice, twedt, ObsN, day)
   temp <- dplyr::select(covs, routeID, Year, StartTemp)
   temp <- temp[!duplicated(temp[,-3]),]
   temp$StartTemp <- scale(as.numeric(temp$StartTemp))[,1]
@@ -182,6 +185,12 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
   nov <- dplyr::select(nov, -routeID)
   nov[is.na(nov)] <- 0
   
+  twedt <- dplyr::select(covs, routeID, Year, twedt)
+  twedt <- twedt[!duplicated(twedt[,-3]),]
+  twedt <- tidyr::spread(twedt, key = Year, value = twedt)
+  twedt <- dplyr::select(twedt, -routeID)
+  twedt[is.na(twedt)] <- 0
+  
   obs <- dplyr::select(covs, routeID, Year, ObsN)
   obs <- obs[!duplicated(obs[,-3]),]
   obs <- tidyr::spread(obs, key = Year, value = ObsN)
@@ -200,7 +209,7 @@ GetCorrData <- function(bbs_raw = bbs, AOU,
   
 
   alpha <- code_lookup$alpha[code_lookup$AOU == AOU]
-  dat <- list(alpha = alpha, h = h, temp = temp, time = time, wind = wind, nov = nov, obs = obs, 
+  dat <- list(alpha = alpha, h = h, temp = temp, time = time, wind = wind, nov = nov, twedt = twedt, obs = obs, 
               slat = slat, slon = slon, lat = coord$Latitude, lon = coord$Longitude, bcr = bcr, nRoutes = nRoutes, nStops = nStops, 
               nYears = nYears, start_year = start.year, end_year = end.year, hull = hull)
   
